@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<data>
+	<flv>http://vedio.5054399.com/video/xipu/sougoupf/qjyds.f4v</flv><!--视频地址-->
+	<url></url><!--游戏首地址-->
+	<active>http://huodong.4399.com/hero/jhm/</active><!--抢激活码地址-->
+	<topic>TopicUI.swf?v=150205</topic><!--扉页按钮-->
+	<sleep>TopicSleepUI.swf?v=150120</sleep><!--系统休眠-->
+	<maintenance>TopicMaintenanceUI.swf?v=150317</maintenance><!--系统维护页面-->
+	<server_state>http://api4.hero999.aiwan4399.com/get_server_state.php</server_state><!--验证系统-->
+	<client_time>http://hero999.aiwan4399.com/getServerDate.php</client_time><!--前端时间地址-->
+	<hero_url>shortcut.url?v=14103004</hero_url><!--桌面地址-->
+	<hero_url_name>英雄之境.url</hero_url_name><!--桌面地址下载名称-->
+	<microblog>http://e.t.qq.com/yingxiongzhijing/</microblog><!--博客-->
+	<forum>http://my.4399.com/forums-mtag-tagid-81277.html</forum><!--论坛-->
+	<calc>http://tj.hero999.aiwan4399.com/api.php</calc><!--统计登陆地址-->
+	<isCalc>1</isCalc><!--是否开始统计-->
+	<loadFail>res/topic/loadFailed.swf</loadFail><!--加载失败的加载动画地址-->
+	<roll time='6000' actiontime='0.7'>
+		<content>topicOne.swf?v=15090102</content>
+
+     	</roll>
+</data>

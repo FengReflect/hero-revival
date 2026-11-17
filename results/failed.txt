@@ -1,0 +1,2 @@
+https://hero999.aiwan4399.com/expressInstall.swf	404
+https://hero999.aiwan4399.com/config.xml	<HTTPError 429: 'Too Many Requests'>

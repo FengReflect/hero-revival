@@ -1,0 +1,25 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<meta content="ie=7" http-equiv="x-ua-compatible" />
+<title></title>
+</head>
+<body style="margin:0;padding:0;">
+<script type="text/javascript" src="http://cbjs.baidu.com/js/m.js"></script>
+<script type="text/javascript">
+	//读取url中的参数"id"并绘制广告
+	(function() {
+		try{
+			var match = location.href.match(/(\?|&)id=([^&]+)(&|$)/);
+			if (match) {
+				var slotId = parseInt(match[2], 10);
+				if (slotId) {
+					BAIDU_CLB_fillSlot(match[2]);
+				}
+			}
+		} catch (ex){}
+	})();
+</script>
+</body>
+</html>
