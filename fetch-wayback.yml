@@ -1,0 +1,91 @@
+name: Fetch Hero Realm Client
+
+# 在 GitHub 的服务器上抓取 archive.org 上的《英雄之境》客户端，避开本机被墙的问题。
+# 用法：Actions -> Fetch Hero Realm Client -> Run workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      cmd:
+        description: "执行模式：list / download / scan / probe / all"
+        required: true
+        default: "all"
+      only:
+        description: "只下载指定扩展名（如 swf,xml,png），留空=全部"
+        required: false
+        default: ""
+      limited:
+        description: "试跑条数（仅 list/download 生效，留空=不限制）"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch from Wayback
+        env:
+          CMD: ${{ inputs.cmd }}
+          ONLY: ${{ inputs.only }}
+          LIMITED: ${{ inputs.limited }}
+        run: |
+          set -u
+          ARGS=""
+          if [ -n "${ONLY:-}" ]; then ARGS="$ARGS --only $ONLY"; fi
+          if [ -n "${LIMITED:-}" ]; then ARGS="$ARGS --limit $LIMITED"; fi
+          echo "python wayback_fetch.py $CMD --out wayback_yxzj --workers 4 $ARGS"
+          python wayback_fetch.py "$CMD" --out wayback_yxzj --workers 4 $ARGS
+
+      - name: Summarize
+        if: always()
+        run: |
+          for f in wayback_yxzj/cdx.tsv wayback_yxzj/assets.tsv wayback_yxzj/extra_urls.tsv wayback_yxzj/alive.txt; do
+            if [ -f "$f" ]; then
+              echo "===== $f ($(wc -l < "$f") 行) ====="
+              head -n 40 "$f"
+            fi
+          done
+          echo "===== SWF 文件（按大小倒序，前 60）====="
+          find wayback_yxzj -iname '*.swf' -printf '%s\t%p\n' 2>/dev/null | sort -nr | head -n 60 || true
+          echo "===== 各类型统计 ====="
+          find wayback_yxzj -type f 2>/dev/null | sed 's/.*\.//' | sort | uniq -c | sort -nr | head -n 20 || true
+
+      - name: Pack
+        if: always()
+        run: |
+          du -sh wayback_yxzj || true
+          find wayback_yxzj -type f | wc -l || true
+          mkdir -p out
+          # 只打包 SWF 和配置类文件，避免 artifact 超过 500MB 上限
+          rsync -a --include='*/' --include='*.swf' --include='*.xml' --include='*.json' \
+                --include='*.txt' --include='*.tsv' --include='*.dat' --include='*.bin' \
+                --exclude='*' wayback_yxzj/ out/ || \
+          cp -r wayback_yxzj out/ 2>/dev/null || true
+          cd out && zip -qr ../hero-realm-client.zip . || true
+          ls -lh ../hero-realm-client.zip || true
+
+      - name: Upload artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hero-realm-wayback
+          path: |
+            hero-realm-client.zip
+            wayback_yxzj/*.tsv
+            wayback_yxzj/*.txt
+          if-no-files-found: warn
+          retention-days: 30
+          compression-level: 0
